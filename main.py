@@ -1,4 +1,5 @@
 
+import os
 from langchain import ConversationChain, PromptTemplate
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
@@ -8,10 +9,12 @@ from langchain.agents import initialize_agent
 from langchain.chains import ConversationalRetrievalChain
 from langchain.document_loaders import TextLoader
 from langchain.memory import ConversationBufferMemory
+import openai
 
 
 
-OPENAI_API_KEY = "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"
+
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 loader = TextLoader("data.txt")
 documents = loader.load()
@@ -21,7 +24,7 @@ documents = loader.load()
 text_splitter = CharacterTextSplitter(chunk_size=60000, chunk_overlap=0)
 documents = text_splitter.split_documents(documents)
 
-embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+embeddings = OpenAIEmbeddings()
 vectorstore = Chroma.from_documents(documents, embeddings)
 
 #  create a memory object
@@ -79,7 +82,6 @@ PROMPT = PromptTemplate(
 chain_type_kwargs = {"prompt": PROMPT}
 
 llm = ChatOpenAI(
-    openai_api_key=OPENAI_API_KEY,
     model_name='gpt-3.5-turbo',
     temperature=0.0,
 )
