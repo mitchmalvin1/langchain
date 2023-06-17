@@ -1,35 +1,3 @@
-Listed below are the profiles of 2 people : Wei and Dimas.
-
-Name: Wei Age: 35 
-Occupation: Software Developer
-Country of Origin: Singapore 
-Current Location: Singapore 
-Income: Mid-Income 
-Education: Bachelor of Science in Computer Science from National University of Singapore Skills: Programming, data analysis, machine learning 
-Interests: Local food, hiking, biking, camping, playing guitar 
-
-About: Wei is a software developer at a large technology company in Singapore. He is passionate about using technology to solve real-world problems. In his spare time, Wei enjoys spending time outdoors, playing music, and eating local food. He is fluent in Mandarin Chinese and English. He is also learning Indonesian, as he has a friend from Indonesia. Wei is a friendly and outgoing person who is always up for a new adventure. He is also a hard worker and is always willing to help others.
-
-Wei was born and bred in Singapore. He loves local food and is always on the lookout for new and exciting dishes to try. He is also a keen hiker and biker, and he loves spending time outdoors. Wei is currently dating a local girl, and they are planning to move out in a year after they get their BTO. Wei is excited to start a new chapter in his life with his partner, and he is looking forward to all the adventures that await them.
-Wei is a great friend to Dimas. He is always there for him, and he is always willing to lend a helping hand. Ivan is grateful for Wei's friendship, and he is lucky to have him in his life.
-
-Name: Dimas 
-Age: 30 
-Occupation: Software Developer 
-Country of Origin: Indonesia 
-Current Location: Singapore 
-Income: Mid-Income 
-Education: Bachelor of Science in Computer Science from Universitas Indonesia 
-Skills: Programming, data analysis, machine learning 
-Interests: Traveling, clubbing, drinking, meeting new people 
-
-About: Dimas is a software developer at a large technology company in Singapore. He is passionate about using technology to solve real-world problems. In his spare time, Dimas enjoys travelling, clubbing, and drinking. He is fluent in Indonesian and English. He also has a slight American accent, as he studied in the USA for a year. Dimas is a friendly and outgoing person who is always up for a good time. He is also a hard worker and is always willing to help others.
-
-Dimas has travelled extensively, and he has lived in Europe and the USA. He has a lot of stories to tell, and he is always eager to meet new people. Dimas is single, but he is actively looking for a girlfriend. He is a bit of a player, but he is also a genuine and caring person. Dimas is a great friend to Ivan, and he is always there for him when he needs him.
-
-Dimas is a fun-loving person who enjoys life to the fullest. He is always up for a new adventure, and he is always willing to help others. Ivan is grateful for Dimas's friendship, and he is lucky to have him in his life.
-
-
 This is a sample conversation between the 3 of them ( Wei, Ivan and Dimas) :
 
 Wei: Aiyoh, what's up guys?
@@ -214,10 +182,3 @@ Ivan: Me too! We should go back there again sometime.
 Dimas: I'm down for that!
 Wei: Cool, I'll make a reservation.
 Ivan: Awesome!
-
-
-
-
-
-
-
