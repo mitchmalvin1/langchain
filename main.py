@@ -68,6 +68,7 @@ conversational_memory = ConversationBufferMemory(memory_key="chat_history", retu
 
 userPrompt = input('Please enter the additional prompt that you would like to be added to the LLM : ')
 
+## Uncomment this and specify into the prompt template when asked
 
 # You are acting as Fabian's wife. Analyze the given conversation in the context. I will talk to you as Fabian and you will reply me as Fabian's wife. Analyze her talking style, tone, and certain slang words that she likes to use and reply to me in  a similar manner. You are to reply to me only once and only as Fabian's wife. Do not complete the conversation more than once. If there is not enough information, try to infer from the context and reply to me on your own. Try to imitate the talking style provided below sparingly and only when it is appropriate to do so.
 
@@ -107,39 +108,6 @@ while True :
      result = qa({"question": userInput})
      print(result["answer"])
 
-## Uncomment the section below to try ConversationChain
-custom_memory = ConversationBufferMemory(ai_prefix = "Kevin", human_prefix = "Mitch")
-
-## I plan to fetch this from the DB in the future
-## Use ConversationChain, comment this chunk out when trying with ConversationalRetrievalChain below
-context = """
- Mitch is a second year Computer Engineering undergraduate who likes to play mobile games. He is from Indonesia and is the youngest son of his family. He came from a small city in North Sumatra called Medan. He has an older sister and is currently living alone in Singapore to pursue his studies.                                                                                                                                    """                                                                                                                                                                                                                                                                                                             
-# template = """The following is a friendly conversation between a Mitch and Kevin. You will act as Kevin and reply me in a Singaporean or heavy Singlish accent and I will act as Mitch. The history of conversation between Mitch and Kevin is provided below.""" + context + """
-# Current conversation:
-# {history}
-# Mitch: {input}
-# Kevin:"""
-
-
-# PROMPT = PromptTemplate(
-#     input_variables=["history","input"], 
-#     template=template
-# )
-
-# conversation = ConversationChain(
-#     llm= ChatOpenAI(
-#     openai_api_key=OPENAI_API_KEY,
-#     model_name='gpt-3.5-turbo',
-#     temperature=0.0
-#     ),
-#     prompt=PROMPT,
-#     verbose=True, 
-#     memory=custom_memory,
-# )
-
-# while True :
-#      userInput = input('User:')
-#      print(conversation.predict(input=userInput))
 
 
 
