@@ -1,8 +1,7 @@
-
 import os
-from langchain import ConversationChain, PromptTemplate
+from langchain import  PromptTemplate
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import Pinecone
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import initialize_agent
@@ -10,35 +9,23 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.document_loaders import TextLoader
 from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.memory import ConversationBufferMemory
+from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request
 import openai
+import pinecone
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+load_dotenv()
+app = Flask(__name__)
 
-documents = [] 
-# loader = TextLoader("data.txt")
-# documents.extend(loader.load())
-
-
-# ingest the csv
-loader = TextLoader(file_path='fabian_chat.txt', encoding = 'cp850')
-documents.extend(loader.load())
-
-
-
-# split the documents, create embeddings for them, 
-# and put them in a vectorstore  to do semantic search over them.
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=30)
-documents = text_splitter.split_documents(documents)
-
-#uncomment this to look at the chunking
-for doc in documents :
-    print(doc)
-    print("\n \n \n \n")
+pinecone.init(
+    api_key=os.getenv('PINECONE_API_KEY'),
+    environment=os.getenv('PINECONE_ENV')
+)
 
 embeddings = OpenAIEmbeddings()
-vectorstore = Chroma.from_documents(documents, embeddings, persist_directory='./data')
 
-vectorstore.persist()
+vectorstore = Pinecone.from_existing_index("test-index", embeddings)
 
 #open text file in read mode
 text_file = open("./chat_summary.txt", "r")
@@ -49,7 +36,6 @@ data = text_file.read()
 #close file
 text_file.close()
  
-
 response = openai.ChatCompletion.create(
   model="gpt-3.5-turbo",
   messages=[
@@ -62,8 +48,6 @@ print(talkingStyleStr)
 
 
 #  create a memory object to track the inputs/outputs and hold a conversation
-
-## for ConversationalRetrievalChain, which is just RetrievalQA chain with memory
 conversational_memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 userPrompt = input('Please enter the additional prompt that you would like to be added to the LLM : ')
@@ -103,10 +87,47 @@ qa = ConversationalRetrievalChain.from_llm(
     memory = conversational_memory)
 
 
-while True :
-     userInput = input('You :')
-     result = qa({"question": userInput})
-     print(result["answer"])
+@app.route('/chat',methods =['POST'])
+def chat_bot():
+    data = request.get_json()
+    if not data :
+        return jsonify ({"Error": "No data provided"}), 400
+    
+    messages = data.get("message")
+    result = qa({"question": messages})
+    return jsonify({"Status" : "success", "Message" : result["answer"]})
+
+
+#This API Endpoint will take in a form file, save it to a local directory, and upload
+@app.route('/ingest',methods = ['POST'])
+def ingest_data():
+
+    if not os.path.exists('./ingestData'):
+        os.makedirs('./ingestData')
+        print(f"Folder '{'./ingestData'}' created.")
+ 
+    file = request.files['file']
+    indexName = request.args.get('index')
+
+    filename = secure_filename(file.filename)
+    file.save(os.path.join('./ingestData', filename))
+
+    documents = []
+    loader = TextLoader(file_path='./ingestData/' + filename, encoding = 'cp850')
+    documents.extend(loader.load())
+
+    # split the documents, create embeddings for them, 
+    # and put them in a vectorstore  to do semantic search over them.
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=30)
+    documents = text_splitter.split_documents(documents)
+    Pinecone.from_documents(documents, embeddings, index_name=indexName)
+    os.remove('./ingestData/' + filename)
+
+    return 'File successfully uploaded.', 200
+
+if __name__ == '__main__' : 
+    app.run()
+     
 
 
 

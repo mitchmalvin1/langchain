@@ -1,4 +1,6 @@
 .env
-*.txt
+chat_summary.txt
+data.txt
+fabian_chat.txt
 data/*
 

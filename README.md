@@ -2,29 +2,28 @@
 
 ## To initialize
 
-Get the API key from OPEN AI's website and set it in your OS envrionment variable
+Get the API key from OPEN AI's website and Pinecone and set it in your OS envrionment variable through the .env file
 
 For instance : 
 
 ```
-echo "export OPENAI_API_KEY='yourkey'" >> ~/.zshrc
-source ~/.zshrc
-echo $OPENAI_API_KEY
+OPENAI_API_KEY=sk-****
+PINECONE_API_KEY=***
+PINECONE_ENV=us-****
 ```
 
 Make sure you have `pip` installed in your device, it is just a package manager for python, then run
 
 ```
-pip install langchain
-pip install openai
+pip install -r requirements.txt
 ```
 
 
 Copy all files (you can find in our group) and name them as follows :
 ```
-fabian_chat.txt : the file containing fabian's entire conversation
 chat_summary.txt : the file containing the small chunk from fabian's conversation used to generate the profile
 ```
+Make sure you have the empty directory `/ingestData` in your folder so that the `ingest` API can put your files there
 
 When prompted for the prompt, you can play around with it or just stick with : 
 ```
@@ -33,7 +32,44 @@ You are acting as Fabian's wife. Analyze the given conversation in the context. 
 
 Navigate to the correct directory and simply run :
 ```
-python main.py
+flask run
 ```
 
 You can comment out certain parts of the `print` statement in the code and remove the `verbose=True` property in the `ConversationalRetrievalChain` if you do not wish to see so mush logging that is cluttering your CLI.
+
+API foot print : 
+
+POST /chat 
+request body : 
+```
+{
+  "message" : "Hello, how are you feeling?"
+}
+```
+
+sample response : 
+```
+{
+  "Message": "Hey feebi! I'm feeling alright, just a bit tired. How about you?",
+  "Status": "success"
+}
+```
+
+
+
+POST /ingest?index={indexName}
+
+query string parameter : indexName to upload the file into, note that the pinecone index must already be created through the pinecone website prior to the uploading
+file form : file name : "file", 
+
+sample response : 
+```
+File successfully uploaded.
+```
+
+
+
+
+
+
+
