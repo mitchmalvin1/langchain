@@ -20,9 +20,6 @@ pip install -r requirements.txt
 
 Run `aws configure` and fill in the AWS Access Key ID, AWS Secret Access Key and Region.
 
-Do not delete the empty directories `/historyData` and `/ingestData` in your folder as the `ingest` and `save` APIs will utilize these dummy directories.
-
-
 Navigate to the  directory and simply run :
 ```
 flask run

@@ -225,6 +225,11 @@ def ingest_data():
 # Upload the local data onto S3 bucket/influencer
 @app.route('/ingest/template',methods = ['POST']) 
 def ingest_template() :
+
+    if not os.path.exists('./ingestData'):
+        os.makedirs('./ingestData')
+        print(f"Folder '{'./ingestData'}' created.")
+
     file = request.files['file']
     influencer = request.args.get('influencer')
 
@@ -241,6 +246,10 @@ def ingest_template() :
 def save_history() :
     userName = request.args.get('user')
     influencer = request.args.get('influencer')
+
+    if not os.path.exists('./historyData'):
+        os.makedirs('./historyData')
+        print(f"Folder '{'./historyData'}' created.")
 
     #save to local history then upload to aws
     with open('./historyData/history.txt', "w") as file:
