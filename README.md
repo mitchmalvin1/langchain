@@ -18,28 +18,29 @@ Make sure you have `pip` installed in your device, it is just a package manager 
 pip install -r requirements.txt
 ```
 
+Run `aws configure` and fill in the AWS Access Key ID, AWS Secret Access Key and Region.
 
-Copy all files (you can find in our group) and name them as follows :
-```
-chat_summary.txt : the file containing the small chunk from fabian's conversation used to generate the profile
-```
-Make sure you have the empty directory `/ingestData` in your folder so that the `ingest` API can put your files there
+Do not delete the empty directories `/historyData` and `/ingestData` in your folder as the `ingest` and `save` APIs will utilize these dummy directories.
 
-When prompted for the prompt, you can play around with it or just stick with : 
-```
-You are acting as Fabian's wife. Analyze the given conversation in the context. I will talk to you as Fabian and you will reply me as Fabian's wife. Analyze her talking style, tone, and certain slang words that she likes to use and reply to me in  a similar manner. You are to reply to me only once and only as Fabian's wife. Do not complete the conversation more than once. If there is not enough information, try to infer from the context and reply to me on your own. Try to imitate the talking style provided below sparingly and only when it is appropriate to do so.
-```
 
-Navigate to the correct directory and simply run :
+Navigate to the  directory and simply run :
 ```
 flask run
 ```
 
-You can comment out certain parts of the `print` statement in the code and remove the `verbose=True` property in the `ConversationalRetrievalChain` if you do not wish to see so mush logging that is cluttering your CLI.
+You can comment out certain parts of the `print` statement in the code and remove the `verbose=True` property in the `ConversationalRetrievalChain` if you do not wish to see so much logging that is cluttering your CLI.
 
-API foot print : 
+The `ingestion-template.txt` in the root directory is the sample txt file that one can specify when calling the `ingest/template` API. Do not that each key (i.e user,influencer,entities etc) should be in its own line.
 
-POST /chat 
+**API foot print** : 
+
+**POST** `/startChat?user={user}&influencer={influencer}`
+This API will initialize a conversation chain between a user and an influencer. This API must be triggered before any `chat` API call.
+`localhost:5000/startchat?user=mitch&influencer=fabian`
+
+**POST** `/chat?user={user}&influencer={influencer}` 
+This API will send a message to chat with the bot after the conversation has been initialized.
+`localhost:5000/chat?user=mitch&influencer=fabian`
 request body : 
 ```
 {
@@ -55,12 +56,28 @@ sample response :
 }
 ```
 
+**POST** `/save?user={user}&influencer={influencer}` 
+This API will save all the chat history between the influencer and the user so far and upload it onto S3 buckets.
+`localhost:5000/save?user=mitch&influencer=fabian`
 
 
-POST /ingest?index={indexName}
 
-query string parameter : indexName to upload the file into, note that the pinecone index must already be created through the pinecone website prior to the uploading
-file form : file name : "file", 
+**POST** `/ingest?index={indexName}&influencer={influencer}`
+This API will take in a file form and upload the file onto Pinecone index and namespace of {influencer}
+
+file form : 
+-file name : "file", 
+
+sample response : 
+```
+File successfully uploaded.
+```
+
+**POST** `ingest/template?influencer={influencer}`
+This API will take in a file form of ingestion template and upload the file onto S3 bucket named `digital-immortality-ingestion-template` and path of `/{influencer}`
+
+file form : 
+-file name : "file", 
 
 sample response : 
 ```
