@@ -1,8 +1,12 @@
 FROM python:3.10.0
 
 WORKDIR /app
-COPY ./ .
+COPY requirements.txt .
+COPY src/* .
+
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["flask", "run"]
+EXPOSE 3031
+
+ENTRYPOINT ["uwsgi", "--socket", ":3031", "--master", "-p", "4", "-w", "app:app"]

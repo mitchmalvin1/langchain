@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  api:
+  backend:
     build: .
     restart: always
     volumes:
@@ -11,7 +11,24 @@ services:
       PINECONE_API_KEY: ${PINECONE_API_KEY}
       PINECONE_ENV: ${PINECONE_ENV}
       S3_BUCKET_NAME: 'digitalimmortality-chat-history'
-#      S3_BUCKET_NAME: 'digital-immortality-chat-history'
       S3_BUCKET_KEY: 'chat-history/history'
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  gateway:
+    image: nginx:1.24-alpine
+    restart: unless-stopped
+    ports:
+      - "7443:443"
+    volumes:
+      - ${PWD}/config/gateway.conf:/etc/nginx/nginx.conf
+      - ${PWD}/config/uwsgi_params:/etc/nginx/uwsgi_params
+      - ${PWD}/data/certbot/conf:/etc/letsencrypt
+      - ${PWD}/data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/data/certbot/conf:/etc/letsencrypt
+      - ${PWD}/data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
