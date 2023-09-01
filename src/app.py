@@ -18,8 +18,8 @@ import boto3
 
 
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
-S3_BUCKET_HISTORY_KEY_PREFIX = '/history'
-S3_BUCKET_TEMPLATES_KEY_PREFIX = '/templates'
+S3_BUCKET_HISTORY_KEY_PREFIX = 'history'
+S3_BUCKET_TEMPLATES_KEY_PREFIX = 'templates'
 
 HISTORY_PATH = './data/historyData'
 INGESTION_PATH = '../data/ingestData'
