@@ -5,7 +5,7 @@ from langchain.vectorstores import Pinecone
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import initialize_agent
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, ConversationChain
 from langchain.document_loaders import TextLoader
 from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.memory import ConversationBufferMemory
@@ -59,7 +59,7 @@ def retrieve_ingestion_template(influencer) :
 
         prompt_template = f"""Use the following pieces of context to answer the question at the end.
 
-        You are acting as {NER_map['influencer']}. Analyze the given conversation in the context. I will talk to you as {NER_map['user']} and you will reply me as {NER_map['influencer']}. Analyze {NER_map['influencer']}'s talking style, tone, and certain slang words that she likes to use and reply to me in  a similar manner. You are to reply to me only once and only as {NER_map['influencer']}. Do not complete the conversation more than once. If there is not enough information, try to infer from the context and reply to me on your own. Try to imitate the talking style provided below sparingly and only when it is appropriate to do so. 
+        You are acting as {NER_map['influencer']}. Analyze the given conversation in the context. I will talk to you as {NER_map['user']} and you will reply me as {NER_map['influencer']}. Analyze {NER_map['influencer']}'s talking style, tone, and certain slang words that she likes to use and reply to me in  a similar manner. You are to reply to me only once and only as {NER_map['influencer']}. Do not complete the conversation more than once. If there is not enough information in the context provided, do not use the context at all and reply to me on your own. Try to imitate the talking style provided below sparingly and only when it is appropriate to do so. 
 
         These are all entities present : 
         {NER_map['entities']}
@@ -118,6 +118,13 @@ def retrieve_history(user, influencer, conversational_memory_instance):
         print('No history detected.')
         print()
 
+condense_prompt = """Given the following conversation and a follow up input, rephrase the follow up input to be a standalone question, in its original language. If it is not related, do not do anything to the follow up input and simply return the follow up input as it is (without modifying it at all). If there is no conversation found, also just return the follow up input in its original form.
+
+Chat History:
+{chat_history}
+Follow Up Input: {question}
+Standalone question:"""
+
 
 def initialize_chat(userName, influencer) :
     global chain_instances
@@ -136,8 +143,8 @@ def initialize_chat(userName, influencer) :
     vectorstore = Pinecone.from_existing_index(indexName, embeddings, namespace=influencer)
 
     #  create a memory object to track the inputs/outputs and hold a conversation
-    conversational_memory_instance = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    retrieve_history(userName, influencer,conversational_memory_instance)
+    # conversational_memory_instance = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    # retrieve_history(userName, influencer,conversational_memory_instance)
     prompt_template = retrieve_ingestion_template(influencer)
 
     PROMPT = PromptTemplate(
@@ -148,7 +155,7 @@ def initialize_chat(userName, influencer) :
 
     llm = ChatOpenAI(
         model_name='gpt-3.5-turbo',
-        temperature=0.0,
+        temperature=0.5,
     )
 
     current_chain = ConversationalRetrievalChain.from_llm(
@@ -156,14 +163,16 @@ def initialize_chat(userName, influencer) :
         vectorstore.as_retriever(search_kwargs={'k': 3}), 
         chain_type = "stuff",
         combine_docs_chain_kwargs= chain_type_kwargs,
-        verbose = True,
-        memory = conversational_memory_instance)
+        condense_question_prompt=PromptTemplate.from_template(""),
+        condense_question_llm=None,
+        verbose = True)
     
     chain_instances[(userName, influencer)] = current_chain
-    conversational_memory_instances[(userName, influencer)] = conversational_memory_instance
+    # conversational_memory_instances[(userName, influencer)] = conversational_memory_instance
     print(f'Chain for {userName} and {influencer} formed')
     print('Here are all the current chains so far :')
     print(list(chain_instances.keys()))
+
     
 
 
@@ -186,8 +195,8 @@ def chat_bot():
     influencer = request.args.get('influencer')
     
     messages = data.get("message")
-    result = chain_instances[(userName, influencer)]({"question": messages})
-    print(conversational_memory_instances[(userName, influencer)].load_memory_variables({}))
+    result = chain_instances[(userName, influencer)]({"question": messages, "chat_history" :""})
+    # print(conversational_memory_instances[(userName, influencer)].load_memory_variables({}))
     
     return jsonify({"Status" : "success", "Message" : result["answer"]})
 
