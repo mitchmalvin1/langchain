@@ -19,6 +19,7 @@ services:
     restart: unless-stopped
     ports:
       - "7443:443"
+      - "8080:80"
     volumes:
       - ${PWD}/config/gateway.conf:/etc/nginx/nginx.conf
       - ${PWD}/config/uwsgi_params:/etc/nginx/uwsgi_params
