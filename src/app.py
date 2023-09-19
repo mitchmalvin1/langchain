@@ -148,9 +148,8 @@ def initialize_chat(user_name, influencer):
 
     vectorstore = Pinecone.from_existing_index(index_name, embeddings, namespace=influencer)
 
-    #  create a memory object to track the inputs/outputs and hold a conversation
-    conversational_memory_instance = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    retrieve_history(user_name, influencer, conversational_memory_instance)
+    # conversational_memory_instance = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
     prompt_template = retrieve_ingestion_template(influencer)
 
     prompt = PromptTemplate(
@@ -169,11 +168,9 @@ def initialize_chat(user_name, influencer):
         vectorstore.as_retriever(search_kwargs={'k': 3}),
         chain_type="stuff",
         combine_docs_chain_kwargs=chain_type_kwargs,
-        verbose=True,
-        memory=conversational_memory_instance)
+        verbose=True,)
 
     chain_instances[(user_name, influencer)] = current_chain
-    conversational_memory_instances[(user_name, influencer)] = conversational_memory_instance
     print(f'Chain for {user_name} and {influencer} formed')
     print('Here are all the current chains so far :')
     print(list(chain_instances.keys()))
@@ -198,8 +195,7 @@ def chat_bot():
     influencer = request.args.get('influencer')
 
     messages = data.get("message")
-    result = chain_instances[(user_name, influencer)]({"question": messages})
-    print(conversational_memory_instances[(user_name, influencer)].load_memory_variables({}))
+    result = chain_instances[(user_name, influencer)]({"question": messages,  "chat_history" :""})
 
     return jsonify({"Status": "success", "Message": result["answer"]})
 
