@@ -8,6 +8,7 @@ entities :
 - feebi refers to fabian's pet dog
 - mama refers to fabian's wife
 - meimei refers to fabian's daughter
+- papa refers to fabian
 
 talking-style : 
 The wife's talking style can be described as casual and informal. She uses short and direct sentences, often omitting pronouns. She also makes frequent use of laughter and emojis to convey humor and express emotions.
