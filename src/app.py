@@ -63,7 +63,7 @@ def retrieve_ingestion_template(influencer):
                 key_index += 1
             elif len(line) > 0:
                 ner_map[curr_key] += line
-
+     
         prompt_template = f"""Use the following pieces of context to answer the question at the end.
 
         You are acting as {ner_map['influencer']}. Analyze the given conversation in the context. 
@@ -132,7 +132,7 @@ def retrieve_history(user, influencer, conversational_memory_instance):
         print()
 
 
-def initialize_chat(user_name, influencer):
+def initialize_chat(user_name, influencer,temperature):
     global chain_instances
     global conversational_memory_instances
 
@@ -160,7 +160,7 @@ def initialize_chat(user_name, influencer):
 
     llm = ChatOpenAI(
         model_name='gpt-3.5-turbo',
-        temperature=0.0,
+        temperature=temperature,
     )
 
     current_chain = ConversationalRetrievalChain.from_llm(
@@ -180,7 +180,9 @@ def initialize_chat(user_name, influencer):
 def start_chat():
     user_name = request.args.get('user')
     influencer = request.args.get('influencer')
-    initialize_chat(user_name, influencer)
+    temperature = request.args.get('temperature')
+
+    initialize_chat(user_name, influencer,temperature)
 
     return f'Chat bot initialized for {user_name} and {influencer}', 200
 
@@ -200,7 +202,7 @@ def chat_bot():
     return jsonify({"Status": "success", "Message": result["answer"]})
 
 
-# This API Endpoint will take in a form file, save it to a local directory, and upload
+# This API Endpoint will take in a form file, save it to a local directory, and upload to Pinecone
 @app.route('/ingest', methods=['POST'])
 def ingest_data():
     file = request.files['file']
