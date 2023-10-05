@@ -1,8 +1,8 @@
 influencer :
-Fabian's wife
+Fabian
 
 user :
-Fabian
+Fabian's Wife
 
 entities : 
 - feebi refers to fabian's pet dog
