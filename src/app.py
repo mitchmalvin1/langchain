@@ -175,6 +175,9 @@ def initialize_chat(user_name, influencer,temperature):
     print('Here are all the current chains so far :')
     print(list(chain_instances.keys()))
 
+def stop_chat_instance(user_name, influencer) :
+    chain_instances.pop((user_name,influencer))
+
 
 @app.route('/startchat', methods=['POST'])
 def start_chat():
@@ -185,6 +188,14 @@ def start_chat():
     initialize_chat(user_name, influencer,temperature)
 
     return f'Chat bot initialized for {user_name} and {influencer}', 200
+
+@app.route('/stopchat', methods=['POST'])
+def stop_chat():
+    user_name = request.args.get('user')
+    influencer = request.args.get('influencer')
+    stop_chat_instance(user_name, influencer)
+
+    return f'Chat bot stopped for {user_name} and {influencer}', 200
 
 
 @app.route('/chat', methods=['POST'])
